@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  pg_pool:
+    build:
+      dockerfile: pgpool.Dockerfile
+      context: .
+    depends_on:
+      - db_master
+    ports:
+      - "5432:5432"
+
+  db_master:
+    build:
+      dockerfile: pg.Dockerfile
+      context: .
+    command: -c ssl=on -c ssl_cert_file=/tls/cert.crt -c ssl_key_file=/tls/cert.key
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+
+  db_replica:
+    build:
+      dockerfile: pg.Dockerfile
+      context: .
+    command: -c ssl=on -c ssl_cert_file=/tls/cert.crt -c ssl_key_file=/tls/cert.key
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
